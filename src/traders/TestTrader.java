@@ -17,6 +17,8 @@ public class TestTrader extends Trader {
 
         Market market = marketIterator.next();
 
+        numberOfShares(market);
+
         System.out.println("Trader 1 buys");
         makeTrade(market, 10.1, 15, OrderParity.BUY);
     }

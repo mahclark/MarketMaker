@@ -44,6 +44,10 @@ public class Market {
         return trades;
     }
 
+    int sharesOwnedBy(String ID) {
+        return shareOwnership.get(ID);
+    }
+
     public void printOrderBook() {
         System.out.println(orderBook);
     }

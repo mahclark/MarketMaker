@@ -17,7 +17,7 @@ public abstract class Trader {
         this.markets = markets;
     }
 
-    void tradeTaken(Trade trade) {
+    synchronized void tradeTaken(Trade trade) {
         assert trade.getMakerID().equals(ID);
 
         double total = trade.getVolume()*trade.getPrice();
@@ -30,14 +30,20 @@ public abstract class Trader {
     }
 
     protected void makeTrade(Market market, double price, int volume, OrderParity parity) {
-        Order order = new Order(price, volume, parity, getID());
-        Collection<Trade> trades = market.trade(order, this);
-        double total = trades.stream().mapToDouble(trade -> trade.getPrice()*trade.getVolume()).sum();
-        if (order.isBuy()) {
-            balance -= total;
-        } else {
-            balance += total;
+        synchronized (ID) {
+            Order order = new Order(price, volume, parity, getID());
+            Collection<Trade> trades = market.trade(order, this);
+            double total = trades.stream().mapToDouble(trade -> trade.getPrice() * trade.getVolume()).sum();
+            if (order.isBuy()) {
+                balance -= total;
+            } else {
+                balance += total;
+            }
         }
+    }
+
+    protected int numberOfShares(Market market) {
+        return market.sharesOwnedBy(getID());
     }
 
     public double getBalance() {
