@@ -1,10 +1,12 @@
+package system;
+
 public class Order implements Comparable<Order> {
     private final double price;
     private int volume;
     private final OrderParity parity;
     private final String traderID;
 
-    public Order(double price, int volume, OrderParity parity, String userID) {
+    Order(double price, int volume, OrderParity parity, String userID) {
         this.price = price;
         this.volume = volume;
         this.traderID = userID;

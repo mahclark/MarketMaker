@@ -1,3 +1,5 @@
+package system;
+
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -30,27 +32,27 @@ public class OrderBook {
     private TreeSet<OrderBookEntry> buyOrders = new TreeSet<>(Comparator.reverseOrder());
     private TreeSet<OrderBookEntry> sellOrders = new TreeSet<>();
 
-    public OrderBook() {
-        addOrder(new Order(10.4, 10, OrderParity.SELL, ""));
-        addOrder(new Order(10.3, 40, OrderParity.SELL, ""));
-        addOrder(new Order(10.3, 20, OrderParity.SELL, ""));
-        addOrder(new Order(10.0, 5, OrderParity.SELL, ""));
-        addOrder(new Order(9.9, 10, OrderParity.BUY, ""));
-        addOrder(new Order(9.6, 15, OrderParity.BUY, ""));
+    OrderBook() {
+//        addOrder(new Order(10.4, 10, OrderParity.SELL, ""));
+//        addOrder(new Order(10.3, 40, OrderParity.SELL, ""));
+//        addOrder(new Order(10.3, 20, OrderParity.SELL, ""));
+//        addOrder(new Order(10.0, 5, OrderParity.SELL, ""));
+//        addOrder(new Order(9.9, 10, OrderParity.BUY, ""));
+//        addOrder(new Order(9.6, 15, OrderParity.BUY, ""));
     }
 
-    public Collection<Trade> addOrder(Order order) {
-        OrderBookEntry orderBookEntry = new OrderBookEntry(order);
+    Collection<Trade> addOrder(Order takeOrder) {
+        OrderBookEntry orderBookEntry = new OrderBookEntry(takeOrder);
 
-        double takePrice = order.getPrice();
-        int takeVolume = order.getVolume();
+        double takePrice = takeOrder.getPrice();
+        int takeVolume = takeOrder.getVolume();
 
         if (takePrice <= 0 || takeVolume <= 0) {
             return new ArrayList<>();
         }
 
-        TreeSet<OrderBookEntry> makeOrders = order.isSell() ? buyOrders : sellOrders;
-        TreeSet<OrderBookEntry> takeOrders = order.isSell() ? sellOrders : buyOrders;
+        TreeSet<OrderBookEntry> makeOrders = takeOrder.isSell() ? buyOrders : sellOrders;
+        TreeSet<OrderBookEntry> takeOrders = takeOrder.isSell() ? sellOrders : buyOrders;
 
         ArrayList<Trade> trades = new ArrayList<>();
         HashSet<OrderBookEntry> toRemove = new HashSet<>();
@@ -60,12 +62,12 @@ public class OrderBook {
             double makePrice = makeOrder.getPrice();
 
             int makeVolume = makeOrder.getVolume();
-            if ((order.isSell() && makePrice < takePrice) || (order.isBuy() && makePrice > takePrice) || takeVolume == 0) {
+            if ((takeOrder.isSell() && makePrice < takePrice) || (takeOrder.isBuy() && makePrice > takePrice) || takeVolume == 0) {
                 break;
             }
             int tradeVolume = Math.min(takeVolume, makeVolume);
             takeVolume -= tradeVolume;
-            trades.add(new Trade(makePrice, tradeVolume));
+            trades.add(new Trade(makePrice, tradeVolume, makeOrder.getTraderID(), takeOrder.getTraderID(), makeOrder.getParity()));
 
             if (makeVolume - tradeVolume == 0) {
                 toRemove.add(makeOrderEntry);
@@ -79,7 +81,7 @@ public class OrderBook {
         }
 
         if (takeVolume > 0) {
-            order.setVolume(takeVolume);
+            takeOrder.setVolume(takeVolume);
             takeOrders.add(orderBookEntry);
         }
 
