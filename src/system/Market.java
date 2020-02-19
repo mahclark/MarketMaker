@@ -45,7 +45,7 @@ public class Market {
     }
 
     int sharesOwnedBy(String ID) {
-        return shareOwnership.get(ID);
+        return shareOwnership.getOrDefault(ID, 0);
     }
 
     public void printOrderBook() {
