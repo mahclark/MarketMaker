@@ -5,14 +5,12 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class Market {
-    private Main main;
-
-    private OrderBook orderBook = new OrderBook();
+    private OrderBook orderBook = new OrderBook(this);
     private HashMap<String, Integer> shareOwnership = new HashMap<>();
     private HashMap<String, Trader> traders = new HashMap<>();
 
-    Market(Main main) {
-        this.main = main;
+    public Market() {
+        orderBook.addOrder(new Order(2.34, 500, OrderParity.SELL, ""));
     }
 
     synchronized Collection<Trade> trade(Order order, Trader trader) {
@@ -22,7 +20,7 @@ public class Market {
         traders.put(traderID, trader);
 
         if (order.isSell() && order.getVolume() > shareOwnership.getOrDefault(traderID, 0)) {
-            //return new ArrayList<>();
+            return new ArrayList<>();
         }
 
         Collection<Trade> trades = orderBook.addOrder(order);
@@ -42,6 +40,18 @@ public class Market {
         System.out.println();
 
         return trades;
+    }
+
+    public double sellPrice() {
+        return orderBook.sellPrice();
+    }
+
+    public double buyPrice() {
+        return orderBook.buyPrice();
+    }
+
+    public void cancelOrder(Order order) {
+        orderBook.cancelOrder(order);
     }
 
     int sharesOwnedBy(String ID) {

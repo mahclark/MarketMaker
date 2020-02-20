@@ -31,8 +31,10 @@ public class OrderBook {
 
     private TreeSet<OrderBookEntry> buyOrders = new TreeSet<>(Comparator.reverseOrder());
     private TreeSet<OrderBookEntry> sellOrders = new TreeSet<>();
+    private final Market market;
 
-    OrderBook() {
+    OrderBook(Market market) {
+        this.market = market;
 //        addOrder(new Order(10.4, 10, OrderParity.SELL, ""));
 //        addOrder(new Order(10.3, 40, OrderParity.SELL, ""));
 //        addOrder(new Order(10.3, 20, OrderParity.SELL, ""));
@@ -67,7 +69,7 @@ public class OrderBook {
             }
             int tradeVolume = Math.min(takeVolume, makeVolume);
             takeVolume -= tradeVolume;
-            trades.add(new Trade(makePrice, tradeVolume, makeOrder.getTraderID(), takeOrder.getTraderID(), makeOrder.getParity()));
+            trades.add(new Trade(makePrice, tradeVolume, makeOrder.getTraderID(), takeOrder.getTraderID(), makeOrder, market));
 
             if (makeVolume - tradeVolume == 0) {
                 toRemove.add(makeOrderEntry);
@@ -80,12 +82,26 @@ public class OrderBook {
             makeOrders.remove(removeOrder);
         }
 
+        assert takeVolume >= 0;
+        takeOrder.setVolume(takeVolume);
         if (takeVolume > 0) {
-            takeOrder.setVolume(takeVolume);
             takeOrders.add(orderBookEntry);
         }
 
         return trades;
+    }
+
+    void cancelOrder(Order order) {
+        TreeSet<OrderBookEntry> orders = order.isBuy() ? buyOrders : sellOrders;
+        orders.removeIf(entry -> entry.getOrder() == order);
+    }
+
+    double sellPrice() {
+        return sellOrders.first().getOrder().getPrice();
+    }
+
+    double buyPrice() {
+        return buyOrders.first().getOrder().getPrice();
     }
 
     @Override
@@ -111,7 +127,7 @@ public class OrderBook {
     }
 
     public static void main(String[] args) {
-        OrderBook orderBook = new OrderBook();
+        OrderBook orderBook = new OrderBook(null);
         System.out.println(orderBook);
 //        System.out.println();
 //        System.out.println(orderBook.addOrder(new Order(10.8, 50, OrderParity.BUY, "")));

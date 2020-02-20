@@ -16,15 +16,21 @@ public class Main {
     }
 
     private Main() {
-        markets.add(new Market(this));
+        markets.add(new Market());
 
-        newTrader(() -> new TestTrader("TestTrader1", new HashSet<>(markets)));
-        newTrader(() -> new TestTrader2("TestTrader2", new HashSet<>(markets)));
+        newThread(() -> new TestTrader("TestTrader1", new HashSet<>(markets)));
+        newThread(() -> new TestTrader2("TestTrader2", new HashSet<>(markets)));
 
-        //printTraderBalances();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            //Ignore
+        }
+
+        printTraderBalances();
     }
 
-    private void newTrader(Procedure procedure) {
+    private void newThread(Procedure procedure) {
         new Thread() {
             @Override
             public void run() {

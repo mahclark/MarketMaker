@@ -6,10 +6,10 @@ public class Order implements Comparable<Order> {
     private final OrderParity parity;
     private final String traderID;
 
-    Order(double price, int volume, OrderParity parity, String userID) {
+    Order(double price, int volume, OrderParity parity, String traderID) {
         this.price = price;
         this.volume = volume;
-        this.traderID = userID;
+        this.traderID = traderID;
         this.parity = parity;
     }
 
@@ -38,7 +38,9 @@ public class Order implements Comparable<Order> {
     }
 
     public void setVolume(int volume) {
-        this.volume = volume;
+        if (volume > 0) {
+            this.volume = volume;
+        }
     }
 
     @Override

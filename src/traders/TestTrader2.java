@@ -21,6 +21,6 @@ public class TestTrader2 extends Trader {
         System.out.println("Trader 2 sells");
         makeTrade(market, 10.0, 5, OrderParity.SELL);
 
-        Main.printTraderBalances();
+//        Main.printTraderBalances();
     }
 }

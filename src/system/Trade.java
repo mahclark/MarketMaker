@@ -5,14 +5,16 @@ public class Trade {
     private final int volume;
     private final String makerID;
     private final String takerID;
-    private final OrderParity makerParity;
+    private final Order makeOrder;
+    private final Market market;
 
-    Trade(double price, int volume, String makerID, String takerID, OrderParity makerParity) {
+    Trade(double price, int volume, String makerID, String takerID, Order makeOrder, Market market) {
         this.price = price;
         this.volume = volume;
         this.makerID = makerID;
         this.takerID = takerID;
-        this.makerParity = makerParity;
+        this.makeOrder = makeOrder;
+        this.market = market;
     }
 
     public double getPrice() {
@@ -32,11 +34,19 @@ public class Trade {
     }
 
     public boolean makerBought() {
-        return makerParity == OrderParity.BUY;
+        return makeOrder.isBuy();
     }
 
     public boolean makerSold() {
-        return makerParity == OrderParity.SELL;
+        return makeOrder.isSell();
+    }
+
+    public Order getMakeOrder() {
+        return makeOrder;
+    }
+
+    public Market getMarket() {
+        return market;
     }
 
     @Override

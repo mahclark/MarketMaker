@@ -1,15 +1,14 @@
 package system;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public abstract class Trader {
     private static final Set<Trader> allTraders = new HashSet<>();
 
-    private double balance;
+    private double balance = 1000;
     private final String ID;
     protected final Set<Market> markets;
+    private HashMap<Market, TreeSet<Order>> activeOrders = new HashMap<>();
 
     public Trader(String ID, Set<Market> markets) {
         allTraders.add(this);
@@ -27,6 +26,10 @@ public abstract class Trader {
             balance += total;
         }
         System.out.println(getID() + "'s new balance: " + balance);
+
+        if (trade.getMakeOrder().getVolume() == 0) {
+            activeOrders.get(trade.getMarket()).remove(trade.getMakeOrder());
+        }
     }
 
     protected void makeTrade(Market market, double price, int volume, OrderParity parity) {
@@ -39,7 +42,19 @@ public abstract class Trader {
             } else {
                 balance += total;
             }
+
+            assert volume - trades.stream().mapToInt(Trade::getVolume).sum() == order.getVolume();
+            if (order.getVolume() > 0) {
+                if (!activeOrders.containsKey(market)) {
+                    activeOrders.put(market, new TreeSet<>());
+                }
+                activeOrders.get(market).add(order);
+            }
         }
+    }
+
+    protected TreeSet<Order> getActiveOrders(Market market) {
+        return activeOrders.getOrDefault(market, new TreeSet<>());
     }
 
     protected int numberOfShares(Market market) {

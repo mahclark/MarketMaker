@@ -21,5 +21,10 @@ public class TestTrader extends Trader {
 
         System.out.println("Trader 1 buys");
         makeTrade(market, 10.1, 15, OrderParity.BUY);
+
+        System.out.println("Trader 1 print");
+        market.printOrderBook();
+        market.cancelOrder(getActiveOrders(market).first());
+        market.printOrderBook();
     }
 }
