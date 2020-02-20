@@ -9,7 +9,7 @@ public class Market {
     private HashMap<String, Integer> shareOwnership = new HashMap<>();
     private HashMap<String, Trader> traders = new HashMap<>();
 
-    public Market() {
+    Market() {
         orderBook.addOrder(new Order(2.34, 500, OrderParity.SELL, ""));
     }
 

@@ -1,6 +1,5 @@
 package traders;
 
-import system.Main;
 import system.Market;
 import system.OrderParity;
 import system.Trader;
